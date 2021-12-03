@@ -40,13 +40,25 @@ def test_window_sum() -> None:
     assert output == [6, 9]
 
 
+def part1(depths: List[int]) -> int:
+    return count_increases(depths)
+
+
+def test_part1() -> None:
+    depths: List[int] = [int(i) for i in open("01.data")]
+    assert part1(depths) == 1195
+
+
+def part2(depths: List[int]) -> int:
+    return count_increases(list(window_sum(depths)))
+
+
+def test_part2() -> None:
+    depths: List[int] = [int(i) for i in open("01.data")]
+    assert part2(depths) == 1235
+
+
 if __name__ == "__main__":
     depths: List[int] = [int(i) for i in open("01.data")]
-    # part 1
-    increases: int = count_increases(depths)
-    print(increases)
-    assert increases == 1195
-    # part 2
-    window_increases: int = count_increases(list(window_sum(depths)))
-    print(window_increases)
-    assert window_increases == 1235
+    print(part1(depths))
+    print(part2(depths))
