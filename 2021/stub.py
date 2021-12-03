@@ -1,7 +1,7 @@
 """Day X"""
 
 import os
-from typing import Iterable, List
+from typing import List
 
 
 def get_inputs() -> List[str]:
