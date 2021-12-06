@@ -70,54 +70,54 @@ def example() -> List[int]:
 
 class LanternFish:
     def __init__(self, fish: List[int]):
-        self.fish = fish
+        self.fish_counts: List[int] = [0 for _ in range(0, 9)]
+        for fish_num in fish:
+            self.fish_counts[fish_num] += 1
 
     def next_day(self):
-        new_fish: List[int] = []
-        add_fish = 0
-        for fish in self.fish:
-            if fish == 0:
-                new_fish.append(6)
-                add_fish += 1
-            else:
-                new_fish.append(fish - 1)
-        for _ in range(0, add_fish):
-            new_fish.append(8)
-        self.fish = new_fish
+        new_fish = self.fish_counts[0]
+        for i in range(0, 8):
+            self.fish_counts[i] = self.fish_counts[i + 1]
+        self.fish_counts[6] += new_fish
+        self.fish_counts[8] = new_fish
+
+    @property
+    def count(self):
+        return sum(self.fish_counts)
 
 
 def test_fish(example: List[int]):
     tank = LanternFish(example)
-    assert len(tank.fish) == 5
+    assert tank.count == 5
     tank.next_day()
-    assert len(tank.fish) == 5
+    assert tank.count == 5
     tank.next_day()
-    assert len(tank.fish) == 6
+    assert tank.count == 6
     tank.next_day()
-    assert len(tank.fish) == 7
+    assert tank.count == 7
     tank.next_day()
-    assert len(tank.fish) == 9
+    assert tank.count == 9
     tank.next_day()
-    assert len(tank.fish) == 10
+    assert tank.count == 10
     tank.next_day()
-    assert len(tank.fish) == 10
+    assert tank.count == 10
     tank.next_day()
-    assert len(tank.fish) == 10
+    assert tank.count == 10
     tank.next_day()
-    assert len(tank.fish) == 10
+    assert tank.count == 10
     for _ in range(0, 10):
         tank.next_day()
-    assert len(tank.fish) == 26
+    assert tank.count == 26
     for _ in range(0, 62):
         tank.next_day()
-    assert len(tank.fish) == 5934
+    assert tank.count == 5934
 
 
 def part1(inputs) -> int:
     tank = LanternFish(inputs)
     for _ in range(0, 80):
         tank.next_day()
-    return len(tank.fish)
+    return tank.count
 
 
 def test_part1() -> None:
@@ -135,86 +135,15 @@ def test_part1() -> None:
 
 
 def part2(inputs) -> int:
-    tank = LanternFish([8])
-    #   1   2   3   4   5
-    # 256 255 254 253 252
-    count: List[int] = []
-    cache = {}
-    for i in range(0, 32 + 9):
-        print(f"{i:3d} {tank.fish}")
+    tank = LanternFish(inputs)
+    for _ in range(0, 256):
         tank.next_day()
-        count.append(len(tank.fish))
-        if i >= 32:
-            cache[i] = tank.fish.copy()
-
-    def get_tank(day: int, start: int):
-        # print(f"({day}, {start})")
-        nonlocal cache
-        if start != 8:
-            return get_tank(day + (8 - start), 8)
-        if day in cache:
-            return cache[day]
-        for split_day in [16, 32, 64, 128, 256]:
-            if split_day >= day:
-                break
-        pivot = int(split_day / 2)
-        tank = LanternFish(cache[pivot])
-        for i in range(1, 9):
-            p_day = pivot + i
-            if p_day in cache:
-                tank = LanternFish(cache[pivot + i])
-            else:
-                tank.next_day()
-                print(f"! {p_day} {len(tank.fish)}")
-                cache[p_day] = tank.fish.copy()
-        new_tank = []
-        for fish in cache[pivot]:
-            new_tank += get_tank(pivot, fish)
-        cache[split_day] = new_tank
-        if day not in cache:
-            raise Exception(f"{day} not in cache")
-        return cache[day]
-
-    print(f"32 {len(get_tank(32,8))}")
-    print(f"64 {len(get_tank(64,8))}")
-    print(f"128 {len(get_tank(128,8))}")
-    print(f"256 {len(get_tank(256,8))}")
-
-    # print(fish_64)
-
-    return 0
-    half: List[int] = []
-
-    total = 0
-    for start in inputs:
-        total + count[256 - start]
-    return total
-
-
-#  0 [8]
-#  2 [6]
-#  7 [1]
-# 16 [6, 8, 1]
-# 18 [4, 6, 6, 8]
-# 23 [6, 8, 1, 1, 3]
-#      16 + (8-2) . 16 + (8-0) . 16 + (8-7)
-# 32 = f[18] . f[16] . f[23]
-# 32 [4, 6, 6, 8, 6, 8, 1, 6, 8, 1, 1, 3]
-# 33 [3, 5, 5, 7, 5, 7, 0, 5, 7, 0, 0, 2]
-# 34 [2, 4, 4, 6, 4, 6, 6, 8, 4, 6, 6, 8, 6, 8, 1]
-# 35 [1, 3, 3, 5, 3, 5, 5, 7, 3, 5, 5, 7, 5, 7, 0]
-# 36 [0, 2, 2, 4, 2, 4, 4, 6, 2, 4, 4, 6, 4, 6, 6, 8]
-# 37 [6, 8, 1, 1, 3, 1, 3, 3, 5, 1, 3, 3, 5, 3, 5, 5, 7]
-# 38 [5, 7, 0, 0, 2, 0, 2, 2, 4, 0, 2, 2, 4, 2, 4, 4, 6]
-# 39 [4, 6, 6, 8, 6, 8, 1, 6, 8, 1, 1, 3, 6, 8, 1, 1, 3, 1, 3, 3, 5]
-# 40 [3, 5, 5, 7, 5, 7, 0, 5, 7, 0, 0, 2, 5, 7, 0, 0, 2, 0, 2, 2, 4]
-
-# 64 [0, 2, 2, 4, 2, 4, 4, 6, 2, 4, 4, 6, 4, 6, 6, 8, 2, 4, 4, 6, 4, 6, 6, 8, 4, 6, 6, 8, 6, 8, 1, 2, 4, 4, 6, 4, 6, 6, 8, 4, 6, 6, 8, 6, 8, 1, 4, 6, 6, 8, 6, 8, 1, 6, 8, 1, 1, 3, 2, 4, 4, 6, 4, 6, 6, 8, 4, 6, 6, 8, 6, 8, 1, 4, 6, 6, 8, 6, 8, 1, 6, 8, 1, 1, 3, 4, 6, 6, 8, 6, 8, 1, 6, 8, 1, 1, 3, 6, 8, 1, 1, 3, 1, 3, 3, 5, 2, 4, 4, 6, 4, 6, 6, 8, 4, 6, 6, 8, 6, 8, 1, 4, 6, 6, 8, 6, 8, 1, 6, 8, 1, 1, 3, 4, 6, 6, 8, 6, 8, 1, 6, 8, 1, 1, 3, 6, 8, 1, 1, 3, 1, 3, 3, 5, 4, 6, 6, 8, 6, 8, 1, 6, 8, 1, 1, 3, 6, 8, 1, 1, 3, 1, 3, 3, 5, 6, 8, 1, 1, 3, 1, 3, 3, 5, 1, 3, 3, 5, 3, 5, 5, 7]
+    return tank.count
 
 
 def test_part2() -> None:
     inputs = get_inputs()
-    assert part2(inputs) == 1
+    assert part2(inputs) == 1609058859115
 
 
 def test_get_inputs() -> None:
