@@ -1,7 +1,14 @@
 """Day X"""
 
 import os
+import pytest
 from typing import List
+
+
+@pytest.fixture
+def example() -> List[str]:
+    return """
+    """.splitlines()
 
 
 def get_inputs() -> List[str]:
