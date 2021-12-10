@@ -28,7 +28,7 @@ class Grid:
         self.height = len(self.rows)
 
     def adjacent(self, x: int, y: int) -> List[Tuple[int, int, int]]:
-        cells: List[int] = []
+        cells: List[Tuple[int, int, int]] = []
         if y > 0:
             cells.append((self.rows[y - 1][x], x, y - 1))
         if y < self.height - 1:
