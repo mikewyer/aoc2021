@@ -34,37 +34,32 @@ class BadChunk(Exception):
     """Syntax Error"""
 
 
-def next_chunk(line: str, start: int = 0):
+def check_chunks(line: str, fix: bool = False):
     pairs = {"(": ")", "[": "]", "{": "}", "<": ">"}
-    if start >= len(line) - 1:
-        raise IncompleteChunk(f"{line}:{start}")
-    open = line[start]
-    next_index = start + 1
-    while next_index < len(line) and line[next_index] in pairs:
-        _, next_index = next_chunk(line, next_index)
-    if next_index >= len(line):
-        raise IncompleteChunk(f"{line}:{next_index}")
-    if line[next_index] == pairs[open]:
-        return line[start : next_index + 1], next_index + 1
-    raise BadChunk(
-        f"Expected {pairs[open]}, found {line[next_index]}: {line[0:next_index]} {line[next_index]} { line[next_index+1:]}"
-    )
-
-
-def parse_line(line: str):
-    chunks = []
-    next_index = 0
-    while next_index < len(line):
-        chunk, next_index = next_chunk(line, next_index)
-        chunks.append(chunk)
-    return chunks
+    stack = []
+    for i, char in enumerate(line):
+        if char in pairs:
+            stack.append(char)
+        elif char == pairs[stack[-1]]:
+            stack.pop()
+        else:
+            if fix:
+                return []
+            raise BadChunk(
+                f"Expected {pairs[stack[-1]]}, found {char}: {line[0:i]} {char} { line[i+1:]}"
+            )
+    if stack:
+        if fix:
+            stack.reverse()
+            return [pairs[i] for i in stack]
+        raise IncompleteChunk(f"{line}: {stack}")
 
 
 def parser_score(lines: List[str]) -> int:
     total: int = 0
     for line in lines:
         try:
-            parse_line(line)
+            check_chunks(line)
         except IncompleteChunk:
             continue
         except BadChunk as err:
@@ -81,7 +76,7 @@ def parser_score(lines: List[str]) -> int:
 
 def test_example(example: List[str]):
     with pytest.raises(IncompleteChunk):
-        parse_line(example[0])
+        check_chunks(example[0])
     assert parser_score(example) == 26397
 
 
@@ -94,13 +89,34 @@ def test_part1() -> None:
     assert part1(inputs) == 374061
 
 
+def fixer_score(lines: List[str]) -> int:
+    scores: List[int] = []
+    char_score = {")": 1, "]": 2, "}": 3, ">": 4}
+    for line in lines:
+        total: int = 0
+        chars = check_chunks(line, fix=True)
+        if not chars:
+            continue
+        for char in chars:
+            total *= 5
+            total += char_score[char]
+        scores.append(total)
+    # print(scores)
+    return sorted(scores)[(len(scores) - 1) // 2]
+
+
+def test_fixer(example: List[str]):
+    assert "".join(check_chunks(example[0], fix=True)) == "}}]])})]"
+    assert fixer_score(example) == 288957
+
+
 def part2(inputs) -> int:
-    return 0
+    return fixer_score(inputs)
 
 
 def test_part2() -> None:
     inputs = get_inputs()
-    assert part2(inputs) == 1
+    assert part2(inputs) == 2116639949
 
 
 def test_get_inputs() -> None:
