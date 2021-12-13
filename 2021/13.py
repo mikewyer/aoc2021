@@ -105,7 +105,9 @@ class Paper:
             y_max = val
             other = lambda x, y: (x, self.max_y - y - 1)
         for x, y in list(self.points):
-            if x not in range(x_max) or y not in range(y_max):
+            if x > self.max_x or y > self.max_y:
+                continue
+            if x > x_max or y > y_max:
                 # print(f"Adding {other(x,y)} for {x},{y}")
                 self.points.add(other(x, y))
         self.max_x = x_max

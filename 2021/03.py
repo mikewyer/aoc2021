@@ -16,7 +16,7 @@ def count_bits(inputs: Iterable[str]) -> Tuple[List[int], int]:
     return totals, words
 
 
-def part1(data: List[str]) -> None:
+def part1(data: List[str]) -> int:
     bit_totals, words = count_bits(data)
     print(f"count:{words} totals:{bit_totals}")
     gamma_bits = [1 if i > (words / 2) else 0 for i in bit_totals]
@@ -25,7 +25,7 @@ def part1(data: List[str]) -> None:
     epsilon = int("".join(str(i) for i in epsilon_bits), base=2)
     print(gamma)
     print(epsilon)
-    print(gamma * epsilon)
+    return gamma * epsilon
 
 
 def ox_filter(index: int, data: Iterable[str], invert: bool = False) -> List[str]:
@@ -36,7 +36,7 @@ def ox_filter(index: int, data: Iterable[str], invert: bool = False) -> List[str
     return [i for i in data if i[index] == str(filter_value)]
 
 
-def part2(data: Iterable[str]) -> None:
+def part2(data: Iterable[str]) -> int:
     ox_list: List[str] = list(data)
     index: int = 0
     while len(ox_list) > 1:
@@ -53,7 +53,17 @@ def part2(data: Iterable[str]) -> None:
     co2 = int(co2_list[0], base=2)
     print(f"ox: {ox}")
     print(f"co2: {co2}")
-    print(ox * co2)
+    return ox * co2
+
+
+def test_part1():
+    data = [i.strip() for i in open("03.data")]
+    assert part1(data) == 852500
+
+
+def test_part2():
+    data = [i.strip() for i in open("03.data")]
+    assert part2(data) == 1007985
 
 
 if __name__ == "__main__":
@@ -61,6 +71,6 @@ if __name__ == "__main__":
     data = [i.strip() for i in open("03.data")]
     print(len(data))
     print("PART 1")
-    part1(data)
+    print(part1(data))
     print("PART 2")
-    part2(data)
+    print(part2(data))
