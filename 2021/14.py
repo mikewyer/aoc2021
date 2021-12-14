@@ -2,6 +2,7 @@
 
 import os
 import pytest
+import timeit
 from typing import Dict, Iterable, List, Tuple
 from functools import cache
 
@@ -146,7 +147,16 @@ def test_example2(example: List[str]):
 def part2(inputs: List[str]) -> int:  # pylint: disable=unused-argument
     chain = inputs[0]
     polymer = Polymer(inputs[2:])
-    counts = polymer.count_rec(chain, 40)
+    # for link_limit in range(2, 10):
+    #     for char_limit in range(3, 20):
+    #         times = timeit.timeit(
+    #             lambda: polymer.count_rec(
+    #                 chain, 40, limit=link_limit, char_limit=char_limit
+    #             ),
+    #             number=10,
+    #         )
+    #         print(f"{link_limit} {char_limit} {times}")
+    counts = polymer.count_rec(chain, 40, limit=3, char_limit=4)
     min_count, max_count = min_max(counts)
     return max_count - min_count
 
