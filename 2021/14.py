@@ -156,7 +156,7 @@ def part2(inputs: List[str]) -> int:  # pylint: disable=unused-argument
     #             number=10,
     #         )
     #         print(f"{link_limit} {char_limit} {times}")
-    counts = polymer.count_rec(chain, 40, limit=3, char_limit=4)
+    counts = polymer.count_rec(chain, 40, limit=3, char_limit=3)
     min_count, max_count = min_max(counts)
     return max_count - min_count
 
