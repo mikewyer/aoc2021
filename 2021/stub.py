@@ -7,8 +7,7 @@ from typing import List
 
 @pytest.fixture
 def example() -> List[str]:
-    return """
-    """.splitlines()
+    return """""".splitlines()
 
 
 def part1(inputs: List[str]) -> int:  # pylint: disable=unused-argument
