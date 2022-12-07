@@ -4,10 +4,12 @@ import os
 import pytest
 from typing import List
 
+INPUT = """"""
+
 
 @pytest.fixture
 def example() -> List[str]:
-    return """""".splitlines()
+    return [i.strip() for i in INPUT.splitlines()]
 
 
 def test_example(example):
